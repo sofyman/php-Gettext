@@ -102,14 +102,14 @@ class JsFunctionsScanner extends FunctionsScanner
 
                 case '(':
                     switch ($this->status()) {
-                        case 'double-quote':
+                        //case 'double-quote':
                         case 'line-comment':
                         case 'block-comment':
                         case 'line-comment':
                             break;
 
                         default:
-                            if ($buffer && preg_match('/(\w+)$/', $buffer, $matches)) {
+                            if ($buffer && preg_match('/((\$|\w)+)$/', $buffer, $matches)) {
                                 $this->downStatus('function');
                                 array_unshift($bufferFunctions, array($matches[1], $line, array()));
                                 $buffer = '';
@@ -127,7 +127,10 @@ class JsFunctionsScanner extends FunctionsScanner
                             }
 
                             if (!empty($bufferFunctions)) {
-                                $functions[] = array_shift($bufferFunctions);
+                                $newFunction = array_shift($bufferFunctions);
+                                if (count($newFunction) === 3) {
+                                    $functions[] = $newFunction;
+                                }
                             }
 
                             $buffer = '';
@@ -210,6 +213,7 @@ class JsFunctionsScanner extends FunctionsScanner
         if ($argument && ($argument[0] === '"' || $argument[0] === "'")) {
             if ($argument[0] === '"') {
                 $argument = str_replace('\\"', '"', $argument);
+                $argument = str_replace('\\n', "\n", $argument);
             } else {
                 $argument = str_replace("\\'", "'", $argument);
             }

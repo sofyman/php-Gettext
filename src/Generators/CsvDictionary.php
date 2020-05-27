@@ -23,6 +23,9 @@ class CsvDictionary extends Generator implements GeneratorInterface
 
         $handle = fopen('php://memory', 'w');
 
+        // Add UTF8 BOM.
+        fwrite($handle, "\xEF\xBB\xBF", 3);
+
         //map to a simple csv dictionary (no plurals)
         foreach ($values as $original => $translated) {
             if (!isset($translated[1])) {
